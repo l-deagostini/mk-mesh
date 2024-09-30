@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+    rabbitmq:
+        image: rabbitmq:4.0.2-management
+        container_name: mk-rabbitmq
+        restart: always
+        ports:
+            - "5672:5672" # default port
+            - "15672:15672" # management interface
+        environment:
+            RABBITMQ_DEFAULT_USER: user
+            RABBITMQ_DEFAULT_PASS: password
+
+    # only for dev purposes, use it to explore and check the db for issues
+    express:
+        image: mongo-express:1.0.2-20-alpine3.19
+        container_name: mk-mesh-express
+        restart: always
+        depends_on: 
+            - mongodb
+        ports:
+            - "8081:8081"
+        environment:
+            ME_CONFIG_MONGODB_PORT: 27017
+            ME_CONFIG_MONGODB_URL: mongodb://admin:password@mk-mesh-mongodb:27017/ # connection string
+
+    mongodb:
+        image: mongo:8.0.0
+        container_name: mk-mesh-mongodb
+        restart: always
+        ports:
+            - "27017:27017"
+        volumes:
+            - ./mongodb/:/docker-entrypoint-initdb.d/
+            # - mongodb_data:/data/db
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: password
+            MONGO_INITDB_DATABASE: mkmesh
+
+    redis:
+        image: redis:7.4.0
+        container_name: mk-mesh-redis
+        restart: always
+        ports:
+            - "6379:6379"
+        # volumes:
+        #   - redis_data:/data
+# volumes:
+#   mongodb_data:
+#   redis_data:
