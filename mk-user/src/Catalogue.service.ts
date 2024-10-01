@@ -1,5 +1,5 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { Catch, Inject, Injectable, Logger, UseFilters } from '@nestjs/common';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { CatalogueItemDto } from './dto/CatalogueItemDto';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { isArray, isNumber, validate } from 'class-validator';
@@ -7,6 +7,7 @@ import { error } from 'console';
 import { firstValueFrom } from 'rxjs';
 import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
 import { RmqCatalogueCommands } from './enums/RmqCommands';
+import { RcpExceptionFilter } from './exceptions/RpcExceptionFilter';
 
 @Injectable()
 export class CatalogueService {
@@ -25,7 +26,6 @@ export class CatalogueService {
     if(result && isNumber(result)){
       return result;
     }
-    throw new Error('Operation failed');
   }
 
   private async toCatalogueItemPageDto(data:any) : Promise<CatalogueItemPageDto> {

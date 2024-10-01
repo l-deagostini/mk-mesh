@@ -1,8 +1,10 @@
-import { BadRequestException, Body, Controller, Get, HttpStatus, Logger, Param, ParseArrayPipe, ParseIntPipe, Post, Res, ValidationPipe, Version } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpStatus, InternalServerErrorException, Logger, Param, ParseArrayPipe, ParseIntPipe, Post, Res, UseFilters, ValidationPipe, Version } from '@nestjs/common';
 import { CatalogueService } from './Catalogue.service';
 import { CatalogueItemDto } from './dto/CatalogueItemDto';
 import { ApiBody, ApiOkResponse, ApiResponse, ApiResponseProperty, ApiTags } from '@nestjs/swagger';
 import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
+import { RcpExceptionFilter } from './exceptions/RpcExceptionFilter';
+import { RpcException } from '@nestjs/microservices';
 
 @ApiTags('Public')
 @Controller({
@@ -19,6 +21,7 @@ export class CatalogueController {
     isArray: true,
     description: 'Available catalogue items'
   })
+  @UseFilters(new RcpExceptionFilter())
   async getCatalogueItems(@Param('page', ParseIntPipe) page: number): Promise<CatalogueItemPageDto> {
     if (page < 0) {
       throw new BadRequestException('Page number cannot be negative');
@@ -34,10 +37,12 @@ export class CatalogueController {
     isArray: false,
     description: 'Inserted count'
   })
-  @ApiBody({type: CatalogueItemDto, isArray: true})
-  async insertCatalogueItems(@Body(new ParseArrayPipe({items: CatalogueItemDto})) items:CatalogueItemDto[]): Promise<Number> {
+  @ApiBody({ type: CatalogueItemDto, isArray: true })
+  @UseFilters(new RcpExceptionFilter())
+  async insertCatalogueItems(@Body(new ParseArrayPipe({ items: CatalogueItemDto })) items: CatalogueItemDto[]): Promise<Number> {
     const result = await this.appService.insertItems(items);
     return result;
+
   }
 
 }
