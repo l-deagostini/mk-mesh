@@ -1,9 +1,10 @@
-import { Controller, Get, Logger } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Catch, Controller, Get, Logger, ParseArrayPipe, UseFilters, ValidationPipe } from '@nestjs/common';
+import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { CatalogueService } from './Catalogue.service';
-import { CatalogueItemDocument } from './schemas/CatalogueItem.schema';
+import { CatalogueItem, CatalogueItemDocument } from './schemas/CatalogueItem.schema';
 import { PageDto } from './dto/PageDto';
 import { RmqCatalogueCommands } from './enums/RmqCommands';
+import { DataValidationExceptionFilter } from './exceptions/RpcExceptionFilter';
 
 @Controller()
 export class CatalogueController {
@@ -29,7 +30,8 @@ export class CatalogueController {
   }
 
   @MessagePattern(RmqCatalogueCommands.INSERT_ITEMS)
-  async insertItems(@Payload('items') data:CatalogueItemDocument[]): Promise<Number> {
+  @UseFilters(new DataValidationExceptionFilter())
+  async insertItems(@Payload('items', new ParseArrayPipe({items: CatalogueItem})) data:CatalogueItem[]): Promise<Number> {
     this.logger.log(`Preparing to insert ${data.length} items`);
     const result = await this.catService.insertItems(data);
     return result;

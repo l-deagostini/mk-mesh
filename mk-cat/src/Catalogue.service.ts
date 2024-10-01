@@ -27,7 +27,7 @@ export class CatalogueService {
     return result;
   }
 
-  async insertItems(item:CatalogueItemDocument[]): Promise<Number> {
+  async insertItems(item:CatalogueItem[]): Promise<Number> {
     this.logger.log(`Inserting: ${item.length} items`);
     const result = await this.connection.collection(CatalogueItemSchema.get('collection'))
       .insertMany(item);
