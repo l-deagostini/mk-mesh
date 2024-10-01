@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { CatController } from './cat.controller';
-import { CatService } from './cat.service';
+import { CatalogueController } from './Catalogue.controller';
+import { CatalogueService } from './Catalogue.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CatalogueItem, CatalogueItemSchema } from './schemas/CatalogueItem.schema';
 
@@ -20,7 +20,7 @@ import { CatalogueItem, CatalogueItemSchema } from './schemas/CatalogueItem.sche
       {name: CatalogueItem.name, schema: CatalogueItemSchema}
     ], 'catalogue')
   ],
-  controllers: [CatController],
-  providers: [CatService],
+  controllers: [CatalogueController],
+  providers: [CatalogueService],
 })
 export class AppModule { }
