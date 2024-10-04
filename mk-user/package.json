@@ -1,7 +1,7 @@
 {
   "name": "mk-user",
   "version": "0.0.1",
-  "description": "REST API backend for MK-Mesh",
+  "description": "API gateway for MK-Mesh",
   "private": true,
   "scripts": {
     "build": "nest build",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
     "@nestjs/microservices": "^10.4.4",
     "@nestjs/platform-express": "^10.0.0",
@@ -27,6 +28,7 @@
     "amqplib": "^0.10.4",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "joi": "^17.13.3",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },

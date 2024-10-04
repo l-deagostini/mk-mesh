@@ -4,7 +4,7 @@ import { CatalogueService } from './Catalogue.service';
 import { CatalogueItem, CatalogueItemDocument } from './schemas/CatalogueItem.schema';
 import { PageDto } from './dto/PageDto';
 import { RmqCatalogueCommands } from './enums/RmqCommands';
-import { DataValidationExceptionFilter } from './exceptions/RpcExceptionFilter';
+import { DataValidationExceptionFilter } from './exceptions/DataValidationExceptionFilter';
 
 @Controller()
 export class CatalogueController {

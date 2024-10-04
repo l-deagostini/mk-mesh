@@ -3,7 +3,7 @@ version: "3.8"
 services:
     rabbitmq:
         image: rabbitmq:4.0.2-management
-        container_name: mk-rabbitmq
+        container_name: mk-mesh-rabbitmq
         restart: always
         ports:
             - "5672:5672" # default port
@@ -47,6 +47,25 @@ services:
             - "6379:6379"
         # volumes:
         #   - redis_data:/data
+
+    mk-user:
+        build: 
+            context: ./mk-user
+        container_name: mk-mesh-user
+        restart: always
+        depends_on:
+            - rabbitmq
+        ports:
+            - "15500:3000"
+    
+    mk-cat:
+        build: 
+            context: ./mk-cat
+        container_name: mk-mesh-cat
+        restart: always
+        depends_on:
+            - rabbitmq
+            - mongodb
 # volumes:
 #   mongodb_data:
 #   redis_data:

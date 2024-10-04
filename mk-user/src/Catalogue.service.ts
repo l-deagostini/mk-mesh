@@ -8,11 +8,12 @@ import { firstValueFrom } from 'rxjs';
 import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
 import { RmqCatalogueCommands } from './enums/RmqCommands';
 import { RcpExceptionFilter } from './exceptions/RpcExceptionFilter';
+import ServiceNames from './enums/ServiceNames';
 
 @Injectable()
 export class CatalogueService {
   private readonly logger = new Logger(CatalogueService.name);
-  constructor(@Inject('CATALOGUE_SERVICE') public catalogueClient:ClientProxy){
+  constructor(@Inject(ServiceNames.CATALOGUE_SERVICE) public catalogueClient:ClientProxy){
   }
 
   async getItems(page:Number): Promise<CatalogueItemPageDto> {
