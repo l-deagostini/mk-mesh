@@ -1,28 +1,34 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
-import { CatalogueItem, CatalogueItemDocument, CatalogueItemSchema } from './schemas/CatalogueItem.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import {
+  CatalogueItem,
+  CatalogueItemDocument,
+} from './schemas/CatalogueItem.schema';
 import ConnectionNames from './enums/ConnectionNames';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CatalogueService {
-
   constructor(
-    @InjectModel(CatalogueItem.name, ConnectionNames.CATALOGUE) private readonly catalogueModel: Model<CatalogueItemDocument>
-  ) { }
+    @InjectModel(CatalogueItem.name, ConnectionNames.CATALOGUE)
+    private readonly catalogueModel: Model<CatalogueItemDocument>,
+  ) {}
   private readonly logger = new Logger(CatalogueService.name);
 
   async getItems(limit = 1, skip = 0): Promise<CatalogueItemDocument[]> {
     this.logger.debug(`Retrieving limit: ${limit} and skipping ${skip}`);
-    const result = await this.catalogueModel.find({}).limit(limit).skip(skip).exec();
+    const result = await this.catalogueModel
+      .find({})
+      .limit(limit)
+      .skip(skip)
+      .exec();
     this.logger.verbose(`Retrieved ${result.length} items`);
     return result;
   }
 
-  async getItemByName(name:string) : Promise<CatalogueItemDocument> {
+  async getItemByName(name: string): Promise<CatalogueItemDocument> {
     this.logger.debug(`Fetching item ${name}`);
-    const result = await this.catalogueModel.findOne({name: name}).exec();
+    const result = await this.catalogueModel.findOne({ name: name }).exec();
     return result;
   }
 
@@ -35,7 +41,7 @@ export class CatalogueService {
     return result;
   }
 
-  async insertItems(item:CatalogueItem[]): Promise<Number> {
+  async insertItems(item: CatalogueItem[]): Promise<number> {
     // this.logger.debug(`Inserting: ${item.length} items`);
     // const result = await this.connection.collection(CatalogueItemSchema.get('collection'))
     //   .insertMany(item);

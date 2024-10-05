@@ -1,5 +1,5 @@
 enum ConnectionNames {
-    CATALOGUE = 'catalogue'
+  CATALOGUE = 'catalogue',
 }
 
 export default ConnectionNames;

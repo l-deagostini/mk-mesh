@@ -10,13 +10,15 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
-      urls: [`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_ADDRESS}:${process.env.RABBITMQ_PORT}/`],
+      urls: [
+        `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_ADDRESS}:${process.env.RABBITMQ_PORT}/`,
+      ],
       queue: process.env.RABBITMQ_CATALOGUE_QUEUE,
       noAck: true,
       queueOptions: {
         durable: false,
-      }
-    }
+      },
+    },
   });
   app.startAllMicroservices();
 }

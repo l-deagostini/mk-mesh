@@ -1,7 +1,10 @@
-import { Catch, Controller, Get, Logger, ParseArrayPipe, UseFilters, ValidationPipe } from '@nestjs/common';
-import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
+import { Controller, Logger, ParseArrayPipe, UseFilters } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CatalogueService } from './Catalogue.service';
-import { CatalogueItem, CatalogueItemDocument } from './schemas/CatalogueItem.schema';
+import {
+  CatalogueItem,
+  CatalogueItemDocument,
+} from './schemas/CatalogueItem.schema';
 import { PageDto } from './dto/PageDto';
 import { RmqCatalogueCommands } from './enums/RmqCommands';
 import { DataValidationExceptionFilter } from './exceptions/DataValidationExceptionFilter';
@@ -13,14 +16,16 @@ export class CatalogueController {
   private readonly PAGE_SIZE = this.configService.get<number>('PAGE_SIZE');
 
   constructor(
-    private configService:ConfigService,
-    private readonly catService: CatalogueService
+    private configService: ConfigService,
+    private readonly catService: CatalogueService,
   ) {
     this.logger.debug(`Max page size set to ${this.PAGE_SIZE}`);
   }
 
   @MessagePattern(RmqCatalogueCommands.GET_ITEMS)
-  async getItems(@Payload('page') page = 1): Promise<PageDto<CatalogueItemDocument>> {
+  async getItems(
+    @Payload('page') page = 1,
+  ): Promise<PageDto<CatalogueItemDocument>> {
     this.logger.debug(`Getting items for page ${page}`);
     page = page < 1 ? 1 : page;
     const documentCount = await this.catService.countItems();
@@ -32,12 +37,15 @@ export class CatalogueController {
       total: Math.ceil(documentCount / this.PAGE_SIZE),
       data: data,
       count: data.length,
-    }
+    };
   }
 
   @MessagePattern(RmqCatalogueCommands.INSERT_ITEMS)
   @UseFilters(new DataValidationExceptionFilter())
-  async insertItems(@Payload('items', new ParseArrayPipe({items: CatalogueItem})) data:CatalogueItem[]): Promise<Number> {
+  async insertItems(
+    @Payload('items', new ParseArrayPipe({ items: CatalogueItem }))
+    data: CatalogueItem[],
+  ): Promise<number> {
     this.logger.log(`Preparing to insert ${data.length} items`);
     const result = await this.catService.insertItems(data);
     return result;
