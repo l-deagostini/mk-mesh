@@ -10,7 +10,7 @@ import * as Joi from 'joi';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      validationSchema: Joi.object({ 
+      validationSchema: Joi.object({
         REQUEST_TIMEOUT: Joi.number().positive().integer().default(5000),
 
         RABBITMQ_USER: Joi.string().required(),
@@ -30,22 +30,22 @@ import * as Joi from 'joi';
         name: ServiceNames.CATALOGUE_SERVICE,
         transport: Transport.RMQ,
         options: {
-          urls: [`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_ADDRESS}:${process.env.RABBITMQ_PORT}`],
+          urls: [
+            `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_ADDRESS}:${process.env.RABBITMQ_PORT}`,
+          ],
           queue: process.env.RABBITMQ_CATALOGUE_QUEUE,
           queueOptions: {
             durable: false,
-          }
-        }
-      }
-    ])
+          },
+        },
+      },
+    ]),
   ],
   controllers: [CatalogueController],
   providers: [CatalogueService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-    .apply(RequestMiddleware)
-    .forRoutes('*')
+    consumer.apply(RequestMiddleware).forRoutes('*');
   }
 }
