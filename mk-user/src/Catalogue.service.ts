@@ -4,26 +4,37 @@ import { CatalogueItemDto } from './dto/CatalogueItemDto';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { isArray, isNumber, validate } from 'class-validator';
 import { error } from 'console';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
 import { RmqCatalogueCommands } from './enums/RmqCommands';
 import { RcpExceptionFilter } from './exceptions/RpcExceptionFilter';
 import ServiceNames from './enums/ServiceNames';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CatalogueService {
   private readonly logger = new Logger(CatalogueService.name);
-  constructor(@Inject(ServiceNames.CATALOGUE_SERVICE) public catalogueClient:ClientProxy){
+  private readonly REQUEST_TIMEOUT:number;
+
+  constructor(
+    private configService:ConfigService,
+    @Inject(ServiceNames.CATALOGUE_SERVICE) public catalogueClient:ClientProxy
+  ){
+    this.REQUEST_TIMEOUT = this.configService.get<number>('REQUEST_TIMEOUT');
+    this.logger.debug(`Request timeout set to ${this.REQUEST_TIMEOUT}ms`);
   }
 
   async getItems(page:Number): Promise<CatalogueItemPageDto> {
-    const result = await firstValueFrom(this.catalogueClient.send(RmqCatalogueCommands.GET_ITEMS, {page:page}));
+    this.logger.debug(`Requesting data from client [${RmqCatalogueCommands.GET_ITEMS}:{page:${page}}]`)
+    const result = await firstValueFrom(this.catalogueClient.send(RmqCatalogueCommands.GET_ITEMS, {page:page}).pipe(timeout(this.REQUEST_TIMEOUT)));
+    this.logger.debug(`Data received [${result.length}]`)
     const dto = await this.toCatalogueItemPageDto(result);
+    this.logger.debug(`Data received [${dto.count}]`)
     return dto;
   }
 
   async insertItems(items:CatalogueItemDto[]): Promise<Number> {
-    const result = await firstValueFrom(this.catalogueClient.send(RmqCatalogueCommands.INSERT_ITEMS, {items: items}));
+    const result = await firstValueFrom(this.catalogueClient.send(RmqCatalogueCommands.INSERT_ITEMS, {items: items}).pipe(timeout(this.REQUEST_TIMEOUT)));
     if(result && isNumber(result)){
       return result;
     }

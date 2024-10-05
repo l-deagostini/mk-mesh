@@ -22,19 +22,4 @@ async function bootstrap() {
   await app.listen(3000);
 }
 
-ConfigModule.forRoot({
-  validationSchema: Joi.object({ 
-    RABBITMQ_USER: Joi.string().required(),
-    RABBITMQ_PASS: Joi.string().required(),
-    RABBITMQ_ADDRESS: Joi.string().required(),
-    RABBITMQ_PORT: Joi.number().port().default(5672),
-    CATALOGUE_QUEUE: Joi.string().default('cat_queue'),
-  }),
-  validationOptions: {
-    allowUnknown: true,
-    abortEarly: true,
-  },
-  isGlobal: true,
-}),
-
 bootstrap();
