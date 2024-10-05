@@ -8,6 +8,7 @@ import {
   ParseArrayPipe,
   ParseIntPipe,
   Post,
+  Query,
   UseFilters,
 } from '@nestjs/common';
 import { CatalogueService } from './Catalogue.service';
@@ -15,6 +16,8 @@ import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
 import { RcpExceptionFilter } from './exceptions/RpcExceptionFilter';
 import { CreateCatalogueItemDto } from './dto/CreateCatalogueItemDto';
+import { CatalogueItemDto } from './dto/CatalogueItemDto';
+import { ObjectIdValidationPipe } from './pipes/ObjectIdValidation.pipe';
 
 @ApiTags('Public')
 @Controller({
@@ -25,7 +28,7 @@ export class CatalogueController {
   private readonly logger = new Logger(CatalogueController.name);
   constructor(private readonly catalogueService: CatalogueService) {}
 
-  @Get('listings/:page')
+  @Get('listings')
   @ApiOkResponse({
     type: CatalogueItemPageDto,
     isArray: true,
@@ -33,7 +36,7 @@ export class CatalogueController {
   })
   @UseFilters(new RcpExceptionFilter())
   async getCatalogueItems(
-    @Param('page', ParseIntPipe) page: number,
+    @Query('page', ParseIntPipe) page: number,
   ): Promise<CatalogueItemPageDto> {
     if (page < 0) {
       throw new BadRequestException('Page number cannot be negative');
@@ -46,7 +49,23 @@ export class CatalogueController {
     return result;
   }
 
-  @Post('listings/add')
+  @Get('listings/:id')
+  @ApiOkResponse({
+    type: CatalogueItemDto,
+    isArray: true,
+    description: 'Find the specified catalogue item',
+  })
+  @UseFilters(new RcpExceptionFilter())
+  async getCatalogueItem(
+    @Param('id', ObjectIdValidationPipe) id: string,
+  ): Promise<CatalogueItemDto> {
+    this.logger.debug(`Forwarding request to service... (id:"${id}")`);
+    const result = await this.catalogueService.getItem(id);
+    this.logger.verbose(`Found item: ${result?.id}`);
+    return result;
+  }
+
+  @Post('listings')
   @ApiOkResponse({
     type: Number,
     isArray: false,

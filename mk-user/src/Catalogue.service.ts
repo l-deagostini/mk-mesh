@@ -38,6 +38,20 @@ export class CatalogueService {
     return dto;
   }
 
+  async getItem(id: string): Promise<CatalogueItemDto> {
+    this.logger.debug(
+      `Requesting data from client [${RmqCatalogueCommands.GET_ITEM}:{id:"${id}"}]`,
+    );
+    const result = await firstValueFrom(
+      this.catalogueClient
+        .send(RmqCatalogueCommands.GET_ITEM, { id: id })
+        .pipe(timeout(this.REQUEST_TIMEOUT)),
+    );
+    const dto = await this.toCatalogueItemDto(result);
+    this.logger.debug(`Data received [${dto.length}]`);
+    return dto.at(0);
+  }
+
   async insertItems(items: CreateCatalogueItemDto[]): Promise<number> {
     const result = await firstValueFrom(
       this.catalogueClient
