@@ -15,5 +15,3 @@ db.items.insertMany([
     { name: "Item 4", description: "Description for item 4", price: 22.00 },
     { name: "Item 5", description: "Description for item 5", price: 5.25 }
 ]);
-
-db.items.createIndex({ name: 1 });
