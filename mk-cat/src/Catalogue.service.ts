@@ -26,6 +26,12 @@ export class CatalogueService {
     return result;
   }
 
+  async getItemById(id: string): Promise<CatalogueItemDocument> {
+    this.logger.debug(`Fetching item ${id}`);
+    const result = await this.catalogueModel.findOne({ _id: id }).exec();
+    return result;
+  }
+
   async getItemByName(name: string): Promise<CatalogueItemDocument> {
     this.logger.debug(`Fetching item ${name}`);
     const result = await this.catalogueModel.findOne({ name: name }).exec();

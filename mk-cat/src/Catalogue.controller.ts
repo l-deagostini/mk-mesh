@@ -6,9 +6,9 @@ import {
   CatalogueItemDocument,
 } from './schemas/CatalogueItem.schema';
 import { PageDto } from './dto/PageDto';
-import { RmqCatalogueCommands } from './enums/RmqCommands';
 import { DataValidationExceptionFilter } from './exceptions/DataValidationExceptionFilter';
 import { ConfigService } from '@nestjs/config';
+import { RmqCatalogueCommands } from './shared/RmqCommands';
 
 @Controller()
 export class CatalogueController {
@@ -40,13 +40,24 @@ export class CatalogueController {
     };
   }
 
+  @MessagePattern(RmqCatalogueCommands.GET_ITEM)
+  @UseFilters(new DataValidationExceptionFilter())
+  async getItem(
+    @Payload('id')
+    id: string,
+  ): Promise<CatalogueItemDocument> {
+    this.logger.debug(`Getting item with id ${id}`);
+    const result = await this.catService.getItemById(id);
+    return result;
+  }
+
   @MessagePattern(RmqCatalogueCommands.INSERT_ITEMS)
   @UseFilters(new DataValidationExceptionFilter())
   async insertItems(
     @Payload('items', new ParseArrayPipe({ items: CatalogueItem }))
     data: CatalogueItem[],
   ): Promise<number> {
-    this.logger.log(`Preparing to insert ${data.length} items`);
+    this.logger.debug(`Preparing to insert ${data.length} items`);
     const result = await this.catService.insertItems(data);
     return result;
   }

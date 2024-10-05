@@ -6,10 +6,10 @@ import { isArray, isNumber, validate } from 'class-validator';
 import { error } from 'console';
 import { firstValueFrom, timeout } from 'rxjs';
 import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
-import { RmqCatalogueCommands } from './enums/RmqCommands';
 import ServiceNames from './enums/ServiceNames';
 import { ConfigService } from '@nestjs/config';
 import { CreateCatalogueItemDto } from './dto/CreateCatalogueItemDto';
+import { RmqCatalogueCommands } from './shared/RmqCommands';
 
 @Injectable()
 export class CatalogueService {
