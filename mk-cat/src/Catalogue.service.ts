@@ -34,18 +34,19 @@ export class CatalogueService {
 
   async countItems(): Promise<number> {
     this.logger.debug(`Retrieving total document count`);
-    const result = this.catalogueModel.estimatedDocumentCount().exec();
-    // const result = await this.connection.collection(CatalogueItemSchema.get('collection'))
-    //   .estimatedDocumentCount();
+    const result = await this.catalogueModel.estimatedDocumentCount().exec();
     this.logger.verbose(`Estimated ${result} catalogue items in collection`);
     return result;
   }
 
-  async insertItems(item: CatalogueItem[]): Promise<number> {
-    // this.logger.debug(`Inserting: ${item.length} items`);
-    // const result = await this.connection.collection(CatalogueItemSchema.get('collection'))
-    //   .insertMany(item);
-    // this.logger.verbose(`Inserted ${result.insertedCount} items`);
-    return 0;
+  async insertItems(items: CatalogueItem[]): Promise<number> {
+    try {
+      this.logger.debug(`Inserting: ${items.length} items`);
+      const insertedItems = await this.catalogueModel.insertMany(items);
+      return insertedItems.length;
+    } catch (error) {
+      this.logger.error('Error inserting items:', error);
+      throw new Error('Failed to insert items: ' + error.message);
+    }
   }
 }
