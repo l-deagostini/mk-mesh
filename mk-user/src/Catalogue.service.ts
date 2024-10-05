@@ -34,7 +34,7 @@ export class CatalogueService {
     );
     this.logger.debug(`Data received [${result.length}]`);
     const dto = await this.toCatalogueItemPageDto(result);
-    this.logger.debug(`Data received [${dto.count}]`);
+    this.logger.debug(`Data received [${dto.length}]`);
     return dto;
   }
 

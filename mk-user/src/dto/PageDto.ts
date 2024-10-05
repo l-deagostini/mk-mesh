@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, ValidateNested } from 'class-validator';
 
-type Constructor<T = {}> = new (...args: any[]) => T;
+type Constructor<T = object> = new (...args: any[]) => T;
 
 export function withPaging<TBase extends Constructor>(
   Base: TBase,
@@ -15,21 +15,21 @@ export function withPaging<TBase extends Constructor>(
       example: 1,
     })
     @IsNumber()
-    current: number;
+    currentPage: number;
 
     @ApiProperty({
       description: 'The number of total pages',
       example: 10,
     })
     @IsNumber()
-    total: number;
+    totalPages: number;
 
     @ApiProperty({
       description: 'The number of items in the page',
       example: 5,
     })
     @IsNumber()
-    count: number;
+    length: number;
 
     @ApiProperty({
       isArray: true,

@@ -41,7 +41,7 @@ export class CatalogueController {
     this.logger.debug(`Forwarding request to service... (page:${page})`);
     const result = await this.catalogueService.getItems(page);
     this.logger.verbose(
-      `Catalogue items: page ${result.current}/${result.total} with ${result.count} elements`,
+      `Catalogue items: page ${result.currentPage}/${result.totalPages} with ${result.length} elements`,
     );
     return result;
   }
