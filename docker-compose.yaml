@@ -3,8 +3,9 @@ version: "3.8"
 services:
     rabbitmq:
         image: rabbitmq:4.0.2-management
-        container_name: mk-mesh-rabbitmq
         restart: always
+        deploy:
+            mode: global
         ports:
             - "5672:5672" # default port
             - "15672:15672" # management interface
@@ -15,57 +16,65 @@ services:
     # only for dev purposes, use it to explore and check the db for issues
     express:
         image: mongo-express:1.0.2-20-alpine3.19
-        container_name: mk-mesh-express
         restart: always
         depends_on: 
             - mongodb
+        deploy:
+            mode: global
         ports:
             - "8081:8081"
         environment:
             ME_CONFIG_MONGODB_PORT: 27017
-            ME_CONFIG_MONGODB_URL: mongodb://admin:password@mk-mesh-mongodb:27017/ # connection string
+            ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongodb:27017/ # connection string
 
     mongodb:
         image: mongo:8.0.0
-        container_name: mk-mesh-mongodb
         restart: always
-        ports:
-            - "27017:27017"
         volumes:
             - ./mongodb/:/docker-entrypoint-initdb.d/
             # - mongodb_data:/data/db
+        deploy:
+            mode: global
         environment:
             MONGO_INITDB_ROOT_USERNAME: admin
             MONGO_INITDB_ROOT_PASSWORD: password
             MONGO_INITDB_DATABASE: mkmesh
 
-    redis:
-        image: redis:7.4.0
-        container_name: mk-mesh-redis
-        restart: always
-        ports:
-            - "6379:6379"
-        # volumes:
-        #   - redis_data:/data
-
     mk-user:
+        image: 127.0.0.1:5000/mk-user
         build: 
             context: ./mk-user
-        container_name: mk-mesh-user
         restart: always
         depends_on:
             - rabbitmq
         ports:
             - "15500:3000"
+        environment:
+            - REQUEST_TIMEOUT=5000 # timeout in ms after a request to a microservice is considered lost
+            - RABBITMQ_USER=user
+            - RABBITMQ_PASS=password
+            - RABBITMQ_ADDRESS=rabbitmq
+            - RABBITMQ_PORT=5672
+            - RABBITMQ_CATALOGUE_QUEUE=cat_queue
     
     mk-cat:
+        image: 127.0.0.1:5000/mk-cat
         build: 
             context: ./mk-cat
-        container_name: mk-mesh-cat
-        restart: always
+        restart: on-failure:5
         depends_on:
             - rabbitmq
             - mongodb
-# volumes:
-#   mongodb_data:
-#   redis_data:
+        environment:
+            - PAGE_SIZE=5 # catalogue items returned in each page
+            - RABBITMQ_USER=user
+            - RABBITMQ_PASS=password
+            - RABBITMQ_ADDRESS=rabbitmq
+            - RABBITMQ_PORT=5672
+            - RABBITMQ_CATALOGUE_QUEUE=cat_queue
+            - MONGODB_ADDRESS=mongodb
+            - MONGODB_PORT=27017
+            - MONGODB_AUTH_SOURCE=mkmesh
+            - MONGODB_USER=mkcat
+            - MONGODB_PASS=password
+            - MONGODB_DATABASE_NAME=catalogue
