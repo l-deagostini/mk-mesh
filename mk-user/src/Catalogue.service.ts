@@ -9,6 +9,7 @@ import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
 import { RmqCatalogueCommands } from './enums/RmqCommands';
 import ServiceNames from './enums/ServiceNames';
 import { ConfigService } from '@nestjs/config';
+import { CreateCatalogueItemDto } from './dto/CreateCatalogueItemDto';
 
 @Injectable()
 export class CatalogueService {
@@ -32,13 +33,12 @@ export class CatalogueService {
         .send(RmqCatalogueCommands.GET_ITEMS, { page: page })
         .pipe(timeout(this.REQUEST_TIMEOUT)),
     );
-    this.logger.debug(`Data received [${result.length}]`);
     const dto = await this.toCatalogueItemPageDto(result);
     this.logger.debug(`Data received [${dto.length}]`);
     return dto;
   }
 
-  async insertItems(items: CatalogueItemDto[]): Promise<number> {
+  async insertItems(items: CreateCatalogueItemDto[]): Promise<number> {
     const result = await firstValueFrom(
       this.catalogueClient
         .send(RmqCatalogueCommands.INSERT_ITEMS, { items: items })

@@ -11,10 +11,10 @@ import {
   UseFilters,
 } from '@nestjs/common';
 import { CatalogueService } from './Catalogue.service';
-import { CatalogueItemDto } from './dto/CatalogueItemDto';
 import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
 import { RcpExceptionFilter } from './exceptions/RpcExceptionFilter';
+import { CreateCatalogueItemDto } from './dto/CreateCatalogueItemDto';
 
 @ApiTags('Public')
 @Controller({
@@ -52,11 +52,11 @@ export class CatalogueController {
     isArray: false,
     description: 'Inserted count',
   })
-  @ApiBody({ type: CatalogueItemDto, isArray: true })
+  @ApiBody({ type: CreateCatalogueItemDto, isArray: true })
   @UseFilters(new RcpExceptionFilter())
   async insertCatalogueItems(
-    @Body(new ParseArrayPipe({ items: CatalogueItemDto }))
-    items: CatalogueItemDto[],
+    @Body(new ParseArrayPipe({ items: CreateCatalogueItemDto }))
+    items: CreateCatalogueItemDto[],
   ): Promise<number> {
     const result = await this.catalogueService.insertItems(items);
     return result;

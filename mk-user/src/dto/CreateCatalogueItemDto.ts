@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import {
-  IsMongoId,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -10,15 +9,7 @@ import {
 } from 'class-validator';
 
 @Exclude()
-export class CatalogueItemDto {
-  @IsNotEmpty()
-  @IsMongoId()
-  @Expose({ name: '_id' })
-  @ApiProperty({
-    description: 'Identifier of the catalogue item',
-  })
-  id: string;
-
+export class CreateCatalogueItemDto {
   @IsNotEmpty()
   @IsString()
   @Expose()
