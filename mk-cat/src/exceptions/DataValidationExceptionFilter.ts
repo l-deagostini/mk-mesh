@@ -11,7 +11,7 @@ import { RpcException } from '@nestjs/microservices';
 export class DataValidationExceptionFilter
   implements RpcExceptionFilter<RpcException>
 {
-  catch(exception: RpcException, host: ArgumentsHost): Observable<any> {
+  catch(exception: RpcException, _host: ArgumentsHost): Observable<any> {
     return throwError(() => exception);
   }
 }
