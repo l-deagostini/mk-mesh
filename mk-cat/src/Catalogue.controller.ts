@@ -33,10 +33,10 @@ export class CatalogueController {
     const skip = (page - 1) * limit;
     const data = await this.catService.getItems(limit, skip);
     return {
-      current: page,
-      total: Math.ceil(documentCount / this.PAGE_SIZE),
+      currentPage: page,
+      totalPages: Math.ceil(documentCount / this.PAGE_SIZE),
       data: data,
-      count: data.length,
+      length: data.length,
     };
   }
 

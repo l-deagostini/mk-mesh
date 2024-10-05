@@ -1,6 +1,6 @@
 export class PageDto<T> {
-  current: number;
-  total: number;
-  count: number;
+  currentPage: number;
+  totalPages: number;
+  length: number;
   data: T[];
 }
