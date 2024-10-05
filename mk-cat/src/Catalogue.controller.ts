@@ -5,19 +5,24 @@ import { CatalogueItem, CatalogueItemDocument } from './schemas/CatalogueItem.sc
 import { PageDto } from './dto/PageDto';
 import { RmqCatalogueCommands } from './enums/RmqCommands';
 import { DataValidationExceptionFilter } from './exceptions/DataValidationExceptionFilter';
+import { ConfigService } from '@nestjs/config';
 
 @Controller()
 export class CatalogueController {
   private readonly logger = new Logger(CatalogueController.name);
-  private readonly PAGE_SIZE = 2;
+  private readonly PAGE_SIZE = this.configService.get<number>('PAGE_SIZE');
 
-  constructor(private readonly catService: CatalogueService) {}
-  
+  constructor(
+    private configService:ConfigService,
+    private readonly catService: CatalogueService
+  ) {
+    this.logger.debug(`Max page size set to ${this.PAGE_SIZE}`);
+  }
 
   @MessagePattern(RmqCatalogueCommands.GET_ITEMS)
   async getItems(@Payload('page') page = 1): Promise<PageDto<CatalogueItemDocument>> {
+    this.logger.debug(`Getting items for page ${page}`);
     page = page < 1 ? 1 : page;
-    this.logger.log(`Getting items for page ${page}`);
     const documentCount = await this.catService.countItems();
     const limit = this.PAGE_SIZE;
     const skip = (page - 1) * limit;
@@ -26,6 +31,7 @@ export class CatalogueController {
       current: page,
       total: Math.ceil(documentCount / this.PAGE_SIZE),
       data: data,
+      count: data.length,
     }
   }
 

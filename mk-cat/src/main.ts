@@ -1,36 +1,24 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { ConfigModule } from '@nestjs/config';
-import * as Joi from 'joi';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+  const app = await NestFactory.create(AppModule, {
+    logger: new Logger(),
+  });
+  app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
-      urls: [`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_ADDRESS}:${process.env.RABBITMQ_PORT}`],
-      queue: process.env.CATALOGUE_QUEUE,
+      urls: [`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_ADDRESS}:${process.env.RABBITMQ_PORT}/`],
+      queue: process.env.RABBITMQ_CATALOGUE_QUEUE,
       noAck: true,
       queueOptions: {
         durable: false,
       }
     }
   });
-  return app.listen();
+  app.startAllMicroservices();
 }
 
-ConfigModule.forRoot({
-  validationSchema: Joi.object({ 
-    RABBITMQ_USER: Joi.string().required(),
-    RABBITMQ_PASS: Joi.string().required(),
-    RABBITMQ_ADDRESS: Joi.string().required(),
-    RABBITMQ_PORT: Joi.number().port().default(5672),
-    CATALOGUE_QUEUE: Joi.string().default('cat_queue'),
-  }),
-  validationOptions: {
-    allowUnknown: true,
-    abortEarly: true,
-  },
-  isGlobal: true,
-}),
 bootstrap();
