@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BasketController } from './basket.controller';
-import { BasketService } from './basket.service';
+import { BasketController } from './Basket.controller';
+import { BasketService } from './Basket.service';
 
 describe('AppController', () => {
   let appController: BasketController;

@@ -1,15 +1,39 @@
-import { Controller, Get } from '@nestjs/common';
-import { BasketService } from './basket.service';
-import { firstValueFrom, lastValueFrom} from 'rxjs';
+import { Controller, Logger } from '@nestjs/common';
+import { BasketService } from './Basket.service';
+import { RmqBasketCommands } from './shared/RmqCommands';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { BasketDocument } from './schemas/Basket.schema';
 
-@Controller('basket')
+@Controller()
 export class BasketController {
-  constructor(private readonly basketService: BasketService) { }
+  private readonly logger = new Logger(BasketController.name);
+  constructor(private readonly basketService: BasketService) {}
 
-  @Get()
-  async helloWorld() {
-    const result = await firstValueFrom(this.basketService.catClient.send('items', []))
-    console.log(result);
-    return result || 'nothing';
+  @MessagePattern(RmqBasketCommands.GET_BASKET)
+  async getItemByUserId(
+    @Payload('id')
+    id: string,
+  ): Promise<BasketDocument> {
+    this.logger.debug(`Getting basket with user ID ${id}`);
+    const result = await this.basketService.getBasketByUserId(id);
+    return result;
+  }
+
+  @MessagePattern(RmqBasketCommands.ADD_TO_BASKET)
+  async addItemToBasket(
+    @Payload('userId')
+    userId: string,
+    @Payload('itemId')
+    itemId: string,
+    @Payload('quantity')
+    quantity: number,
+  ): Promise<BasketDocument> {
+    this.logger.debug(`Adding item[${itemId}] to based of user[${userId}]`);
+    const result = await this.basketService.addBasketItem(
+      userId,
+      itemId,
+      quantity,
+    );
+    return result;
   }
 }
