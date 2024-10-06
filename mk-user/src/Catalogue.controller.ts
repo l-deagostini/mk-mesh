@@ -12,14 +12,15 @@ import {
   UseFilters,
 } from '@nestjs/common';
 import { CatalogueService } from './Catalogue.service';
-import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CatalogueItemPageDto } from './dto/CatalogueItemPage.dto';
 import { RcpExceptionFilter } from './exceptions/RpcExceptionFilter';
 import { CreateCatalogueItemDto } from './dto/CreateCatalogueItem.dto';
 import { CatalogueItemDto } from './dto/CatalogueItem.dto';
 import { ObjectIdValidationPipe } from './pipes/ObjectIdValidation.pipe';
+import OpenApiTags from './enums/OpenApiTags';
 
-@ApiTags('Public')
+@ApiTags(OpenApiTags.CATALOGUE)
 @Controller({
   path: 'catalogue',
   version: '1',
@@ -28,7 +29,10 @@ export class CatalogueController {
   private readonly logger = new Logger(CatalogueController.name);
   constructor(private readonly catalogueService: CatalogueService) {}
 
-  @Get('listings')
+  @Get()
+  @ApiOperation({
+    summary: 'Returns the catalogue items available',
+  })
   @ApiOkResponse({
     type: CatalogueItemPageDto,
     isArray: true,
@@ -49,7 +53,10 @@ export class CatalogueController {
     return result;
   }
 
-  @Get('listings/:id')
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Find the specified item using its ID',
+  })
   @ApiOkResponse({
     type: CatalogueItemDto,
     isArray: true,
@@ -65,7 +72,10 @@ export class CatalogueController {
     return result;
   }
 
-  @Post('listings')
+  @Post()
+  @ApiOperation({
+    summary: 'Add new catalogue items',
+  })
   @ApiOkResponse({
     type: Number,
     isArray: false,

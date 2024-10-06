@@ -6,6 +6,8 @@ import ServiceNames from './enums/ServiceNames';
 import { RequestMiddleware } from './middleware/RequestMiddleware';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { BasketController } from './Basket.controller';
+import { BasketService } from './Basket.service';
 
 @Module({
   imports: [
@@ -39,10 +41,38 @@ import * as Joi from 'joi';
           },
         },
       },
+      {
+        name: ServiceNames.BASKET_SERVICE,
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_ADDRESS}:${process.env.RABBITMQ_PORT}`,
+          ],
+          queue: process.env.RABBITMQ_BASKET_QUEUE,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
+    ClientsModule.register([
+      {
+        name: ServiceNames.BASKET_SERVICE,
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_ADDRESS}:${process.env.RABBITMQ_PORT}`,
+          ],
+          queue: process.env.RABBITMQ_BASKET_QUEUE,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
     ]),
   ],
-  controllers: [CatalogueController],
-  providers: [CatalogueService],
+  controllers: [CatalogueController, BasketController],
+  providers: [CatalogueService, BasketService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

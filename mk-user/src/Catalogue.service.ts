@@ -9,11 +9,7 @@ import { CatalogueItemPageDto } from './dto/CatalogueItemPage.dto';
 import ServiceNames from './enums/ServiceNames';
 import { ConfigService } from '@nestjs/config';
 import { RmqCatalogueCommands } from './shared/RmqCommands';
-import {
-  GetItemPayload,
-  GetItemsPayload,
-  InsertItemsPayload,
-} from './shared/RmqPayloads';
+import { ArrayPayload, IdPayload, PagePayload } from './shared/RmqPayloads';
 
 @Injectable()
 export class CatalogueService {
@@ -29,7 +25,7 @@ export class CatalogueService {
     this.logger.debug(`Request timeout set to ${this.REQUEST_TIMEOUT}ms`);
   }
 
-  async getItems(payload: GetItemsPayload): Promise<CatalogueItemPageDto> {
+  async getItems(payload: PagePayload): Promise<CatalogueItemPageDto> {
     this.logger.debug(
       `Requesting data from client [${RmqCatalogueCommands.GET_ITEMS}:{page:${payload.page}}]`,
     );
@@ -43,7 +39,7 @@ export class CatalogueService {
     return dto;
   }
 
-  async getItem(payload: GetItemPayload): Promise<CatalogueItemDto> {
+  async getItem(payload: IdPayload): Promise<CatalogueItemDto> {
     this.logger.debug(
       `Requesting data from client [${RmqCatalogueCommands.GET_ITEM}:{id:"${payload.id}"}]`,
     );
@@ -57,7 +53,7 @@ export class CatalogueService {
     return dto.at(0);
   }
 
-  async insertItems(items: InsertItemsPayload): Promise<number> {
+  async insertItems(items: ArrayPayload): Promise<number> {
     const result = await firstValueFrom(
       this.catalogueClient
         .send(RmqCatalogueCommands.INSERT_ITEMS, items)
