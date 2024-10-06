@@ -8,6 +8,7 @@ export enum RmqCatalogueCommands {
 export enum RmqBasketCommands {
     GET_BASKET = "get_basket",
     ADD_TO_BASKET = "add_to_basket",
+    REMOVE_BASKET = "remove_basket",
 }
 
 export enum RmqOrderCommands {
