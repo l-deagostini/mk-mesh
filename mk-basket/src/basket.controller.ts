@@ -19,6 +19,16 @@ export class BasketController {
     return result;
   }
 
+  @MessagePattern(RmqBasketCommands.REMOVE_BASKET)
+  async deleteBasketByUserId(
+    @Payload('id')
+    id: string,
+  ): Promise<boolean> {
+    this.logger.debug(`Deleting basket with user ID ${id}`);
+    const result = await this.basketService.deleteBasketByUserId(id);
+    return result;
+  }
+
   @MessagePattern(RmqBasketCommands.ADD_TO_BASKET)
   async addItemToBasket(
     @Payload('userId')

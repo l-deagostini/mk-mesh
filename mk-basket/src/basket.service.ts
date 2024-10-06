@@ -35,6 +35,12 @@ export class BasketService {
     return result;
   }
 
+  async deleteBasketByUserId(id: string): Promise<boolean> {
+    this.logger.debug(`Fetching basket ${id}`);
+    const result = await this.basketModel.deleteOne({ userId: id }).exec();
+    return result.acknowledged;
+  }
+
   async addBasketItem(
     userId: string,
     itemId: string,
