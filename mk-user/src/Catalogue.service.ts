@@ -1,11 +1,11 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { CatalogueItemDto } from './dto/CatalogueItemDto';
+import { CatalogueItemDto } from './dto/CatalogueItem.dto';
 import { plainToClass } from 'class-transformer';
 import { isArray, isNumber, validate } from 'class-validator';
 import { error } from 'console';
 import { firstValueFrom, timeout } from 'rxjs';
-import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
+import { CatalogueItemPageDto } from './dto/CatalogueItemPage.dto';
 import ServiceNames from './enums/ServiceNames';
 import { ConfigService } from '@nestjs/config';
 import { RmqCatalogueCommands } from './shared/RmqCommands';
@@ -22,7 +22,8 @@ export class CatalogueService {
 
   constructor(
     private configService: ConfigService,
-    @Inject(ServiceNames.CATALOGUE_SERVICE) public catalogueClient: ClientProxy,
+    @Inject(ServiceNames.CATALOGUE_SERVICE)
+    private catalogueClient: ClientProxy,
   ) {
     this.REQUEST_TIMEOUT = this.configService.get<number>('REQUEST_TIMEOUT');
     this.logger.debug(`Request timeout set to ${this.REQUEST_TIMEOUT}ms`);

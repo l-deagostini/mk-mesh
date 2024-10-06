@@ -13,10 +13,10 @@ import {
 } from '@nestjs/common';
 import { CatalogueService } from './Catalogue.service';
 import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
+import { CatalogueItemPageDto } from './dto/CatalogueItemPage.dto';
 import { RcpExceptionFilter } from './exceptions/RpcExceptionFilter';
-import { CreateCatalogueItemDto } from './dto/CreateCatalogueItemDto';
-import { CatalogueItemDto } from './dto/CatalogueItemDto';
+import { CreateCatalogueItemDto } from './dto/CreateCatalogueItem.dto';
+import { CatalogueItemDto } from './dto/CatalogueItem.dto';
 import { ObjectIdValidationPipe } from './pipes/ObjectIdValidation.pipe';
 
 @ApiTags('Public')

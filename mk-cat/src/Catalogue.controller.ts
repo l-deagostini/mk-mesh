@@ -5,10 +5,10 @@ import {
   CatalogueItem,
   CatalogueItemDocument,
 } from './schemas/CatalogueItem.schema';
-import { PageDto } from './dto/PageDto';
 import { DataValidationExceptionFilter } from './exceptions/DataValidationExceptionFilter';
 import { ConfigService } from '@nestjs/config';
 import { RmqCatalogueCommands } from './shared/RmqCommands';
+import { PageDto } from './dto/Page.dto';
 
 @Controller()
 export class CatalogueController {
@@ -42,7 +42,7 @@ export class CatalogueController {
 
   @MessagePattern(RmqCatalogueCommands.GET_ITEM)
   @UseFilters(new DataValidationExceptionFilter())
-  async getItem(
+  async getItemById(
     @Payload('id')
     id: string,
   ): Promise<CatalogueItemDocument> {
