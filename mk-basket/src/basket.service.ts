@@ -62,7 +62,7 @@ export class BasketService {
           quantity: quantity,
         });
       }
-      basket.save();
+      await basket.save();
       return basket;
     }
     const basketItem: BasketItem = {
