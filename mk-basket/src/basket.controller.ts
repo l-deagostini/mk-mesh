@@ -10,7 +10,7 @@ export class BasketController {
   constructor(private readonly basketService: BasketService) {}
 
   @MessagePattern(RmqBasketCommands.GET_BASKET)
-  async getItemByUserId(
+  async getBasketByUserId(
     @Payload('id')
     id: string,
   ): Promise<BasketDocument> {
