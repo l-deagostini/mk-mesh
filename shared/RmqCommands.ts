@@ -9,3 +9,9 @@ export enum RmqBasketCommands {
     GET_BASKET = "get_basket",
     ADD_TO_BASKET = "add_to_basket",
 }
+
+export enum RmqOrderCommands {
+    GET_ORDER = "get_order",
+    CONFIRM_ORDER = "confirm_order",
+    UPDATE_STATUS = "update_status",
+}

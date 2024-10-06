@@ -16,3 +16,8 @@ export interface AddToBasketPayload {
     itemId: string;
     quantity: number;
 }
+
+export interface UpdateOrderStatusPayload {
+    orderId: string;
+    status: string;
+}
