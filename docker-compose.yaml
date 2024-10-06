@@ -78,3 +78,49 @@ services:
             - MONGODB_USER=mkcat
             - MONGODB_PASS=password
             - MONGODB_DATABASE_NAME=catalogue
+    
+    mk-basket:
+        image: 127.0.0.1:5000/mk-basket
+        build: 
+            context: ./mk-basket
+        restart: on-failure:5
+        depends_on:
+            - rabbitmq
+            - mongodb
+        environment:
+            - RABBITMQ_USER=user
+            - RABBITMQ_PASS=password
+            - RABBITMQ_ADDRESS=rabbitmq
+            - RABBITMQ_PORT=5672
+            - RABBITMQ_CATALOGUE_QUEUE=cat_queue
+            - RABBITMQ_BASKET_QUEUE=basket_queue
+            - RABBITMQ_ORDER_QUEUE=order_queue
+            - MONGODB_ADDRESS=mongodb
+            - MONGODB_PORT=27017
+            - MONGODB_AUTH_SOURCE=mkmesh
+            - MONGODB_USER=mkbasket
+            - MONGODB_PASS=password
+            - MONGODB_DATABASE_NAME=basket
+
+    mk-order:
+        image: 127.0.0.1:5000/mk-order
+        build: 
+            context: ./mk-order
+        restart: on-failure:5
+        depends_on:
+            - rabbitmq
+            - mongodb
+        environment:
+            - RABBITMQ_USER=user
+            - RABBITMQ_PASS=password
+            - RABBITMQ_ADDRESS=rabbitmq
+            - RABBITMQ_PORT=5672
+            - RABBITMQ_CATALOGUE_QUEUE=cat_queue
+            - RABBITMQ_BASKET_QUEUE=basket_queue
+            - RABBITMQ_ORDER_QUEUE=order_queue
+            - MONGODB_ADDRESS=mongodb
+            - MONGODB_PORT=27017
+            - MONGODB_AUTH_SOURCE=mkmesh
+            - MONGODB_USER=mkorder
+            - MONGODB_PASS=password
+            - MONGODB_DATABASE_NAME=order
