@@ -10,15 +10,15 @@ db = new Mongo().getDB("basket");
 db.createCollection('baskets', { capped: false });
 db.baskets.insertMany([
     {
-        user_id: "user12345", items: [
-            { name: "Item 1", quantity: 2, total: 21.98 },
-            { name: "Item 2", quantity: 1, total: 15.49 }
+        userId: "user12345", items: [
+            { id: "someId1", quantity: 2, price: 10.19, total: 20.38 },
+            { id: "someId2", quantity: 1, price: 15.49, total: 15.49 }
         ],
-        total_price: 37.47,
-        total_items: 3,
-        created_at: "2024-10-01T14:00:00Z",
-        updated_at: "2024-10-01T14:30:00Z"
+        totalPrice: 35.87,
+        totalItems: 3,
+        createdAt: "2024-10-01T14:00:00Z",
+        updatedAt: "2024-10-01T14:30:00Z"
     },
 ]);
 
-db.baskets.createIndex({ user_id: 1 });
+db.baskets.createIndex({ userId: 1 });
