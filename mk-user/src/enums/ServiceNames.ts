@@ -1,6 +1,7 @@
 enum ServiceNames {
   CATALOGUE_SERVICE = 'CATALOGUE_SERVICE',
   BASKET_SERVICE = 'BASKET_SERVICE',
+  ORDER_SERVICE = 'ORDER_SERVICE',
 }
 
 export default ServiceNames;

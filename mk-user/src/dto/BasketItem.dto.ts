@@ -15,7 +15,7 @@ export class BasketItemDto {
   @IsNumber()
   @Expose()
   @ApiProperty({
-    description: 'Quantity of items in the basket',
+    description: 'Item quantity',
   })
   quantity: number;
 

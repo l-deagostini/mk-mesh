@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { BasketController } from './Basket.controller';
 import { BasketService } from './Basket.service';
+import { OrderController } from './Order.controller';
+import { OrderService } from './Order.service';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { BasketService } from './Basket.service';
         RABBITMQ_ADDRESS: Joi.string().required(),
         RABBITMQ_PORT: Joi.number().port().default(5672),
         RABBITMQ_CATALOGUE_QUEUE: Joi.string().default('cat_queue'),
+        RABBITMQ_BASKET_QUEUE: Joi.string().default('basket_queue'),
+        RABBITMQ_ORDER_QUEUE: Joi.string().default('order_queue'),
       }),
       validationOptions: {
         allowUnknown: true,
@@ -54,16 +58,14 @@ import { BasketService } from './Basket.service';
           },
         },
       },
-    ]),
-    ClientsModule.register([
       {
-        name: ServiceNames.BASKET_SERVICE,
+        name: ServiceNames.ORDER_SERVICE,
         transport: Transport.RMQ,
         options: {
           urls: [
             `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_ADDRESS}:${process.env.RABBITMQ_PORT}`,
           ],
-          queue: process.env.RABBITMQ_BASKET_QUEUE,
+          queue: process.env.RABBITMQ_ORDER_QUEUE,
           queueOptions: {
             durable: false,
           },
@@ -71,8 +73,8 @@ import { BasketService } from './Basket.service';
       },
     ]),
   ],
-  controllers: [CatalogueController, BasketController],
-  providers: [CatalogueService, BasketService],
+  controllers: [CatalogueController, BasketController, OrderController],
+  providers: [CatalogueService, BasketService, OrderService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
