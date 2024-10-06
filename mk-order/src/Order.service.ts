@@ -60,10 +60,21 @@ export class OrderService {
     const basket = plainToInstance(BasketDto, data);
     await validate(basket);
     this.logger.debug(`Basket from user found [id:${basket.id}]`);
-    const order = await this.orderModel.create({
+    let order = await this.orderModel.create({
       userId: userId,
       items: basket.items,
     });
-    return await order.save();
+    order = await order.save();
+    const deleteResult = await firstValueFrom<boolean>(
+      this.basketClient
+        .send(RmqBasketCommands.REMOVE_BASKET, {
+          id: userId,
+        } as IdPayload)
+        .pipe(timeout(5000)),
+    );
+    this.logger.debug(
+      `Deleted basket with id [id:${basket.id},ack:${deleteResult}]`,
+    );
+    return order;
   }
 }
