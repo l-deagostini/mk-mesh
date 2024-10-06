@@ -42,7 +42,7 @@ export class CatalogueController {
       throw new BadRequestException('Page number cannot be negative');
     }
     this.logger.debug(`Forwarding request to service... (page:${page})`);
-    const result = await this.catalogueService.getItems(page);
+    const result = await this.catalogueService.getItems({ page: page });
     this.logger.verbose(
       `Catalogue items: page ${result.currentPage}/${result.totalPages} with ${result.length} elements`,
     );
@@ -60,7 +60,7 @@ export class CatalogueController {
     @Param('id', ObjectIdValidationPipe) id: string,
   ): Promise<CatalogueItemDto> {
     this.logger.debug(`Forwarding request to service... (id:"${id}")`);
-    const result = await this.catalogueService.getItem(id);
+    const result = await this.catalogueService.getItem({ id: id });
     this.logger.verbose(`Found item: ${result?.id}`);
     return result;
   }
@@ -77,7 +77,7 @@ export class CatalogueController {
     @Body(new ParseArrayPipe({ items: CreateCatalogueItemDto }))
     items: CreateCatalogueItemDto[],
   ): Promise<number> {
-    const result = await this.catalogueService.insertItems(items);
+    const result = await this.catalogueService.insertItems({ items: items });
     return result;
   }
 }

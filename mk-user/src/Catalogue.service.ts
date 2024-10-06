@@ -8,8 +8,12 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { CatalogueItemPageDto } from './dto/CatalogueItemPageDto';
 import ServiceNames from './enums/ServiceNames';
 import { ConfigService } from '@nestjs/config';
-import { CreateCatalogueItemDto } from './dto/CreateCatalogueItemDto';
 import { RmqCatalogueCommands } from './shared/RmqCommands';
+import {
+  GetItemPayload,
+  GetItemsPayload,
+  InsertItemsPayload,
+} from './shared/RmqPayloads';
 
 @Injectable()
 export class CatalogueService {
@@ -24,13 +28,13 @@ export class CatalogueService {
     this.logger.debug(`Request timeout set to ${this.REQUEST_TIMEOUT}ms`);
   }
 
-  async getItems(page: number): Promise<CatalogueItemPageDto> {
+  async getItems(payload: GetItemsPayload): Promise<CatalogueItemPageDto> {
     this.logger.debug(
-      `Requesting data from client [${RmqCatalogueCommands.GET_ITEMS}:{page:${page}}]`,
+      `Requesting data from client [${RmqCatalogueCommands.GET_ITEMS}:{page:${payload.page}}]`,
     );
     const result = await firstValueFrom(
       this.catalogueClient
-        .send(RmqCatalogueCommands.GET_ITEMS, { page: page })
+        .send(RmqCatalogueCommands.GET_ITEMS, payload)
         .pipe(timeout(this.REQUEST_TIMEOUT)),
     );
     const dto = await this.toCatalogueItemPageDto(result);
@@ -38,13 +42,13 @@ export class CatalogueService {
     return dto;
   }
 
-  async getItem(id: string): Promise<CatalogueItemDto> {
+  async getItem(payload: GetItemPayload): Promise<CatalogueItemDto> {
     this.logger.debug(
-      `Requesting data from client [${RmqCatalogueCommands.GET_ITEM}:{id:"${id}"}]`,
+      `Requesting data from client [${RmqCatalogueCommands.GET_ITEM}:{id:"${payload.id}"}]`,
     );
     const result = await firstValueFrom(
       this.catalogueClient
-        .send(RmqCatalogueCommands.GET_ITEM, { id: id })
+        .send(RmqCatalogueCommands.GET_ITEM, payload)
         .pipe(timeout(this.REQUEST_TIMEOUT)),
     );
     const dto = await this.toCatalogueItemDto(result);
@@ -52,10 +56,10 @@ export class CatalogueService {
     return dto.at(0);
   }
 
-  async insertItems(items: CreateCatalogueItemDto[]): Promise<number> {
+  async insertItems(items: InsertItemsPayload): Promise<number> {
     const result = await firstValueFrom(
       this.catalogueClient
-        .send(RmqCatalogueCommands.INSERT_ITEMS, { items: items })
+        .send(RmqCatalogueCommands.INSERT_ITEMS, items)
         .pipe(timeout(this.REQUEST_TIMEOUT)),
     );
     if (result && isNumber(result)) {
