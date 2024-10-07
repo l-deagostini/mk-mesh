@@ -9,7 +9,7 @@ Here are the microservices:
 - Basket called **MK-Basket** in the directory `./mk-basket`
 - Order called **MK-Order** in the directory `./mk-order`
 
-Available there is also an API gateway used to interact with the microservices. It is called **MK-User** and is in the directory `./mk-order`. It is reachable, by default, at the port `3000` and you can access the Swagger interface at `localhost:3000/api` to test out the features.
+Available there is also an API gateway used to interact with the microservices. It is called **MK-User** and is in the directory `./mk-user`. It is reachable, by default, at the port `3000` and you can access the Swagger interface at `localhost:3000/api` to test out the features.
 
 Each microservice is written using Nest.JS on top of TS and Node.
 
